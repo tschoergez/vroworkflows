@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="399e21ce-9fd3-43e9-a42c-cbf750f0462c" version="0.0.6" api-version="6.0.0" allowed-operations="vef" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Get token info for workflows]]></display-name>
+  <position y="50.0" x="100.0"></position>
+  <input>
+    <param name="workflowTokens" type="Array/WorkflowToken"></param>
+    <param name="includeInputs" type="boolean"></param>
+    <param name="includeAttributes" type="boolean"></param>
+    <param name="includeOutputs" type="boolean"></param>
+  </input>
+  <output>
+    <param name="tokenInfoJson" type="string"></param>
+  </output>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"></position>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[find workflowtokens]]></display-name>
+    <script encoded="false"><![CDATA[workflowTokenList = new Array();
+
+	for each (var token in workflowTokens) {
+			//System.debug(logToken(token));
+			if (token != null && token.isStillValid)
+				workflowTokenList.push(getTokenDetails(token, includeInputs, includeAttributes, includeOutputs));
+	}
+
+tokenInfoJson = JSON.stringify(workflowTokenList);
+System.debug(tokenInfoJson);
+
+function logToken(token) {
+	var startDate = new Date(token.startDateAsDate.getTime() - (7 * 3600000) );
+	startDateLog = System.formatDate(startDate, "dd MMM yyyy HH:mm:ss");
+	var log = "=== " + token.name + " ===\n" ;
+	log += "id = " + token.id + "\nstartDate = " + startDateLog + "\nstatus = " + token.state;
+	return log;
+} 
+
+function getTokenDetails(token, includeInputs, includeAttributes, includeOutputs) {
+	var tokenInfo = {};
+	tokenInfo.id = token.id;
+	tokenInfo.name = token.name;
+	tokenInfo.state = token.state;
+	tokenInfo.businessState = token.businessState;
+	tokenInfo.startDateEpoch = token.startDateAsDate.getTime();
+	(token.EndDateAsDate) ? tokenInfo.endDateEpoch = token.endDateAsDate.getTime() : tokenInfo.endDateEpoch = -1;
+	tokenInfo.rootWorkflowId = token.rootWorkflow.id;
+	tokenInfo.exception = token.exception;
+	(includeInputs) ? tokenInfo.inputParameters = getAttributeDetails(token.getInputParameters()) : {};
+	(includeAttributes) ? tokenInfo.attributes = getAttributeDetails(token.getAttributes()) : {};
+	(includeOutputs) ? tokenInfo.outputParameters = getAttributeDetails(token.getOutputParameters()) : {};
+	return tokenInfo;
+}
+
+function getAttributeDetails(parameters) {
+	if (!parameters) return [];
+	var details = [];
+
+	for each (var key in parameters.keys) {
+		var value = parameters[key];
+		var detail = {};
+		try {
+			detail[key] = value.toString();
+		} catch (e) {
+			detail[key] = "not retrievable";
+		}
+		details.push(detail);
+	}
+	return details;
+}
+
+]]></script>
+    <in-binding>
+      <bind name="workflowTokens" type="Array/WorkflowToken" export-name="workflowTokens"></bind>
+      <bind name="includeInputs" type="boolean" export-name="includeInputs"></bind>
+      <bind name="includeAttributes" type="boolean" export-name="includeAttributes"></bind>
+      <bind name="includeOutputs" type="boolean" export-name="includeOutputs"></bind>
+    </in-binding>
+    <out-binding>
+      <bind name="tokenInfoJson" type="string" export-name="tokenInfoJson"></bind>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"></position>
+  </workflow-item>
+  <presentation>
+    <p-param name="workflowTokens">
+      <desc><![CDATA[workflowTokens]]></desc>
+    </p-param>
+    <p-param name="includeInputs">
+      <desc><![CDATA[includeInputs]]></desc>
+    </p-param>
+    <p-param name="includeAttributes">
+      <desc><![CDATA[includeAttributes]]></desc>
+    </p-param>
+    <p-param name="includeOutputs">
+      <desc><![CDATA[includeOutputs]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

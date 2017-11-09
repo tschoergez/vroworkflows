@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>Exported from [server]</comment>
+<entry key="categoryPath">vRO Ops Tools</entry>
+<entry key="name">Get token info for workflows</entry>
+<entry key="type">Workflow</entry>
+<entry key="id">399e21ce-9fd3-43e9-a42c-cbf750f0462c</entry>
+</properties>

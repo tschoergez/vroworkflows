@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item3" object-name="workflow:name=generic" id="176b7de4-4edb-4968-b52c-8ff248c12145" version="0.0.1" api-version="6.0.0" allowed-operations="vef" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Send workflow details ]]></display-name>
+  <position y="50.0" x="100.0"></position>
+  <input>
+    <param name="workflowCategory" type="WorkflowCategory"></param>
+    <param name="searchPath" type="string"></param>
+    <param name="searchString" type="string"></param>
+    <param name="includeInputs" type="boolean"></param>
+    <param name="includeAttributes" type="boolean"></param>
+    <param name="includeOutputs" type="boolean"></param>
+    <param name="broker" type="AMQP:Broker">
+      <description><![CDATA[Broker to send a message from]]></description>
+    </param>
+    <param name="exchange" type="string">
+      <description><![CDATA[Exchange through which to send the message]]></description>
+    </param>
+    <param name="routingKey" type="string">
+      <description><![CDATA[Routing key for the message]]></description>
+    </param>
+    <param name="sendAsAMQP" type="boolean">
+      <description><![CDATA[Send the workflow details as AMQP messages]]></description>
+    </param>
+    <param name="storeInLocalTemp" type="boolean">
+      <description><![CDATA[Store the workflow details locally in temp directory]]></description>
+    </param>
+  </input>
+  <attrib name="workflowTokenList" type="Array/WorkflowToken" read-only="false"></attrib>
+  <attrib name="localPath" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="36.31818181818181" x="664.5"></position>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" type="link" linked-workflow-id="e6d74c61-5853-4e0f-b2b1-59fbb907b6dc">
+    <display-name><![CDATA[Find Executions based on input]]></display-name>
+    <in-binding>
+      <bind name="workflowCategory" type="WorkflowCategory" export-name="workflowCategory"></bind>
+      <bind name="searchPath" type="string" export-name="searchPath"></bind>
+      <bind name="searchString" type="string" export-name="searchString"></bind>
+    </in-binding>
+    <out-binding>
+      <bind name="workflowTokenList" type="Array/WorkflowToken" export-name="workflowTokenList"></bind>
+    </out-binding>
+    <position y="46.31818181818181" x="344.5"></position>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item2" type="link" linked-workflow-id="3d711d3a-1306-4287-8228-f2ac1933477c">
+    <display-name><![CDATA[Get all workflow token for category]]></display-name>
+    <in-binding>
+      <bind name="workflowCategory" type="WorkflowCategory" export-name="workflowCategory"></bind>
+    </in-binding>
+    <out-binding>
+      <bind name="workflowtokens" type="Array/WorkflowToken" export-name="workflowTokenList"></bind>
+    </out-binding>
+    <position y="91.77272727272727" x="345.0"></position>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item1" type="custom-condition" alt-out-name="item4">
+    <display-name><![CDATA[Filter?]]></display-name>
+    <script encoded="false"><![CDATA[return searchPath.length > 0 ;]]></script>
+    <in-binding>
+      <bind name="searchPath" type="string" export-name="searchPath"></bind>
+    </in-binding>
+    <position y="45.40909090909091" x="204.5"></position>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item0" type="task">
+    <display-name><![CDATA[getTokenInfo And SendMessage]]></display-name>
+    <script encoded="false"><![CDATA[tokenInfo = [];
+
+for each (var token in workflowTokenList) {
+		//System.debug(logToken(token));
+		if (token != null && token.isStillValid)
+			tokenInfo.push(System.getModule("com.vmware.orchestrator.ops").getTokenInfos(token, includeInputs, includeAttributes, includeOutputs));
+}
+
+tokenInfoJson = JSON.stringify(tokenInfo);
+//System.debug("tokenInfoJson: " + tokenInfoJson);
+
+if (sendAsAMQP) {
+	var msg = new AMQPMessage();
+	msg.bodyAsText = tokenInfoJson;
+	broker.send(exchange, routingKey, msg);
+}
+
+if (storeInLocalTemp) {
+	var localPath = System.getTempDirectory() + "/" + System.formatDate(new Date, "yyyyMMddHHmmssS") + "_workflow_details.json";
+	System.debug("Going to store the workflow details in: " + localPath);
+	
+	var myFileWriter = new FileWriter(localPath);
+	myFileWriter.open();
+	myFileWriter.write(tokenInfoJson);
+	myFileWriter.close();
+}
+]]></script>
+    <in-binding>
+      <bind name="includeInputs" type="boolean" export-name="includeInputs"></bind>
+      <bind name="includeAttributes" type="boolean" export-name="includeAttributes"></bind>
+      <bind name="includeOutputs" type="boolean" export-name="includeOutputs"></bind>
+      <bind name="workflowTokenList" type="Array/WorkflowToken" export-name="workflowTokenList"></bind>
+      <bind name="broker" type="AMQP:Broker" export-name="broker"></bind>
+      <bind name="exchange" type="string" export-name="exchange"></bind>
+      <bind name="routingKey" type="string" export-name="routingKey"></bind>
+      <bind name="sendAsAMQP" type="boolean" export-name="sendAsAMQP"></bind>
+      <bind name="storeInLocalTemp" type="boolean" export-name="storeInLocalTemp"></bind>
+    </in-binding>
+    <out-binding>
+      <bind name="localPath" type="string" export-name="localPath"></bind>
+    </out-binding>
+    <position y="46.31818181818181" x="484.5"></position>
+  </workflow-item>
+  <presentation>
+    <p-param name="workflowCategory">
+      <desc><![CDATA[workflowCategory]]></desc>
+    </p-param>
+    <p-param name="searchPath">
+      <desc><![CDATA[searchPath]]></desc>
+    </p-param>
+    <p-param name="searchString">
+      <desc><![CDATA[searchString]]></desc>
+    </p-param>
+    <p-param name="includeInputs">
+      <desc><![CDATA[includeInputs]]></desc>
+    </p-param>
+    <p-param name="includeAttributes">
+      <desc><![CDATA[includeAttributes]]></desc>
+    </p-param>
+    <p-param name="includeOutputs">
+      <desc><![CDATA[includeOutputs]]></desc>
+    </p-param>
+    <p-param name="broker">
+      <desc><![CDATA[Broker to send a message from]]></desc>
+    </p-param>
+    <p-param name="exchange">
+      <desc><![CDATA[Exchange through which to send the message]]></desc>
+    </p-param>
+    <p-param name="routingKey">
+      <desc><![CDATA[Routing key for the message]]></desc>
+    </p-param>
+    <p-param name="sendAsAMQP">
+      <desc><![CDATA[Send the workflow details as AMQP messages]]></desc>
+    </p-param>
+    <p-param name="storeInLocalTemp">
+      <desc><![CDATA[Store the workflow details locally in temp directory]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

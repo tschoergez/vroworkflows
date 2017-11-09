@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dunes-script-module name="getTokenInfos" result-type="string" api-version="6.0.0" id="4e31343d-b14b-43a5-9f61-5050590f358e" version="0.0.0" allowed-operations="vef">
+  <param n="token" t="WorkflowToken"><![CDATA[]]></param>
+  <param n="includeInputs" t="boolean"><![CDATA[]]></param>
+  <param n="includeAttributes" t="boolean"><![CDATA[]]></param>
+  <param n="includeOutputs" t="boolean"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[
+	var tokenInfo = {};
+	tokenInfo.id = token.id;
+	tokenInfo.name = token.name;
+	tokenInfo.state = token.state;
+	tokenInfo.businessState = token.businessState;
+	tokenInfo.startDateEpoch = token.startDateAsDate.getTime();
+	(token.EndDateAsDate) ? tokenInfo.endDateEpoch = token.endDateAsDate.getTime() : tokenInfo.endDateEpoch = -1;
+	tokenInfo.rootWorkflowId = token.rootWorkflow.id;
+	tokenInfo.exception = token.exception;
+	(includeInputs) ? tokenInfo.inputParameters = getAttributeDetails(token.getInputParameters()) : {};
+	(includeAttributes) ? tokenInfo.attributes = getAttributeDetails(token.getAttributes()) : {};
+	(includeOutputs) ? tokenInfo.outputParameters = getAttributeDetails(token.getOutputParameters()) : {};
+	return tokenInfo;
+
+
+function getAttributeDetails(parameters) {
+	if (!parameters) return [];
+	var details = [];
+
+	for each (var key in parameters.keys) {
+		var value = parameters[key];
+		var detail = {};
+		try {
+			detail[key] = value.toString();
+		} catch (e) {
+			detail[key] = "not retrievable";
+		}
+		details.push(detail);
+	}
+	return details;
+}
+
+]]></script>
+</dunes-script-module>

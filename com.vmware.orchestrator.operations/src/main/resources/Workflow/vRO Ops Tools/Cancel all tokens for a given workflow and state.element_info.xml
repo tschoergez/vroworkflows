@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>Exported from [server]</comment>
+<entry key="categoryPath">vRO Ops Tools</entry>
+<entry key="name">Cancel all tokens for a given workflow and state</entry>
+<entry key="type">Workflow</entry>
+<entry key="id">cb1b0b1d-c78a-45d9-a681-da4373fae784</entry>
+</properties>

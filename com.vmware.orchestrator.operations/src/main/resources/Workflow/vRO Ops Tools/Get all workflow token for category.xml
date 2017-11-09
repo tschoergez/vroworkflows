@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="3d711d3a-1306-4287-8228-f2ac1933477c" version="0.0.0" api-version="6.0.0" allowed-operations="vef" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Get all workflow token for category]]></display-name>
+  <position y="50.0" x="100.0"></position>
+  <input>
+    <param name="workflowCategory" type="WorkflowCategory"></param>
+  </input>
+  <output>
+    <param name="workflowtokens" type="Array/WorkflowToken"></param>
+  </output>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"></position>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[var workflowTokenList = [];
+var workflows = workflowCategory.allWorkflows;
+for each (var wfl in workflows) {
+	var tokens = wfl.executions;
+	for each (var token in tokens) {
+
+		
+			workflowTokenList.push(token);
+		
+	}
+}
+
+workflowtokens = workflowTokenList;]]></script>
+    <in-binding>
+      <bind name="workflowCategory" type="WorkflowCategory" export-name="workflowCategory"></bind>
+    </in-binding>
+    <out-binding>
+      <bind name="workflowtokens" type="Array/WorkflowToken" export-name="workflowtokens"></bind>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"></position>
+  </workflow-item>
+  <presentation>
+    <p-param name="workflowCategory">
+      <desc><![CDATA[workflowCategory]]></desc>
+    </p-param>
+  </presentation>
+</workflow>
