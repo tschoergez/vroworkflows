@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>Exported from [server]</comment>
+<entry key="categoryPath">vRO Ops Tools</entry>
+<entry key="name">Fetch workflow details </entry>
+<entry key="type">Workflow</entry>
+<entry key="id">63a2cfe2-79d9-48dd-a226-b45dcd86513d</entry>
+</properties>

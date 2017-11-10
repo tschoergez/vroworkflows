@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<items>
+  <item>
+    <content initialized="true"/>
+    <ver>0.0.1</ver>
+    <date>20160824185948+0200</date>
+    <user>admin</user>
+    <cm><![CDATA[]]></cm>
+  </item>
+  <item>
+    <content initialized="true"/>
+    <ver>0.0.2</ver>
+    <date>20160824191527+0200</date>
+    <user>admin</user>
+    <cm><![CDATA[]]></cm>
+  </item>
+  <item>
+    <content initialized="true"/>
+    <ver>0.0.3</ver>
+    <date>20170320141639+0100</date>
+    <user>admin</user>
+    <cm><![CDATA[]]></cm>
+  </item>
+</items>

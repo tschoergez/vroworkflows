@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="ecd7476f-1d49-4ee1-bc06-838c5a6f5763" version="0.0.7" api-version="6.0.0" allowed-operations="vef" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Find Executions based on attribute value]]></display-name>
+  <position y="50.0" x="100.0"></position>
+  <input>
+    <param name="workflowCategory" type="WorkflowCategory">
+      <description><![CDATA[Workflow Category to find Token, if not provided, all Tokens will be processed]]></description>
+    </param>
+    <param name="searchString" type="string">
+      <description><![CDATA[attributename=attributevalue]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="workflowTokenList" type="Array/WorkflowToken"></param>
+  </output>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"></position>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[find workflowtokens]]></display-name>
+    <script encoded="false"><![CDATA[workflowTokenList = new Array();
+
+var workflows = [];
+if (!workflowCategory) {
+	System.debug("No Workflow Folder specified, processing all workflows....");
+	var allWorkflowCategories = Server.findAllForType("WorkflowCategory");
+	for each (var category in allWorkflowCategories) {
+		var workflowsOfCategory = category.workflows;
+			for each (var wfl in workflowsOfCategory) {
+				workflows.push(wfl);
+			}
+		}
+} else {
+	workflows = workflowCategory.allWorkflows;
+}
+
+
+
+for each (var wfl in workflows) {
+	System.debug("Examining workflow: " + wfl.name);
+	var tokens = wfl.executions;
+	for each (var token in tokens) {
+		System.debug("Examining workflowToken: " + token.id);
+		if (matches(token)) {
+			System.debug("Found token matching criteria: \n" + logToken(token));
+			workflowTokenList.push(token);
+		}
+	}
+}
+
+function logToken(token) {
+	var startDate = new Date(token.startDateAsDate.getTime() - (7 * 3600000) );
+	startDateLog = System.formatDate(startDate, "dd MMM yyyy HH:mm:ss");
+	var log = "=== " + token.name + " ===\n" ;
+	log += "id = " + token.id + "\nstartDate = " + startDateLog + "\nstatus = " + token.state;
+	return log;
+}
+
+function isEmpty(str) {
+	return (!str || 0 === str.length);
+}
+ 
+function matchAttributeValue(props, attribute, value) {
+	if (!props) return false;
+	var result = (props[attribute] === value);
+	//System.debug(JSON.stringify(props) + "::" + attribute +"::"+value+"::"+result);
+	return result;
+}
+
+function matches(token) {
+	if (!token.isStillValid) return false;
+
+	if (isEmpty(searchString)) return true;
+	
+	var searchStringToken = searchString.split("=");
+	
+	var attributeToLookFor = searchStringToken[0];
+	var valueToLookFor = searchStringToken[1];
+	
+	var inputParameters = token.getInputParameters();
+	var outputParameters = token.getOutputParameters();
+	var attributes = token.getAttributes();
+	var emptyArray = [];
+	var allAttributes = emptyArray.concat(inputParameters,outputParameters,attributes);
+
+	return allAttributes.some(function(item) {
+				return matchAttributeValue(item, attributeToLookFor, valueToLookFor);
+			});
+
+}
+			]]></script>
+    <in-binding>
+      <bind name="workflowCategory" type="WorkflowCategory" export-name="workflowCategory"></bind>
+      <bind name="searchString" type="string" export-name="searchString"></bind>
+    </in-binding>
+    <out-binding>
+      <bind name="workflowTokenList" type="Array/WorkflowToken" export-name="workflowTokenList"></bind>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"></position>
+  </workflow-item>
+  <presentation>
+    <p-param name="workflowCategory">
+      <desc><![CDATA[workflowCategory]]></desc>
+    </p-param>
+    <p-param name="searchString">
+      <desc><![CDATA[searchString]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

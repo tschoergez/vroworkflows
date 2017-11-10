@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<items>
+  <item>
+    <content initialized="true"/>
+    <ver>0.0.1</ver>
+    <date>20160808034521+0200</date>
+    <user>admin</user>
+    <cm><![CDATA[]]></cm>
+  </item>
+  <item>
+    <content initialized="true"/>
+    <ver>0.0.2</ver>
+    <date>20160808040414+0200</date>
+    <user>admin</user>
+    <cm><![CDATA[]]></cm>
+  </item>
+  <item>
+    <content initialized="true"/>
+    <ver>0.0.3</ver>
+    <date>20160808044435+0200</date>
+    <user>admin</user>
+    <cm><![CDATA[]]></cm>
+  </item>
+  <item>
+    <content initialized="true"/>
+    <ver>0.0.4</ver>
+    <date>20160808050735+0200</date>
+    <user>admin</user>
+    <cm><![CDATA[]]></cm>
+  </item>
+  <item>
+    <content initialized="true"/>
+    <ver>0.0.5</ver>
+    <date>20160808052505+0200</date>
+    <user>admin</user>
+    <cm><![CDATA[]]></cm>
+  </item>
+  <item>
+    <content initialized="true"/>
+    <ver>0.0.6</ver>
+    <date>20170320164214+0100</date>
+    <user>admin</user>
+    <cm><![CDATA[]]></cm>
+  </item>
+  <item>
+    <content initialized="true"/>
+    <ver>0.0.7</ver>
+    <date>20170320164715+0100</date>
+    <user>admin</user>
+    <cm><![CDATA[]]></cm>
+  </item>
+</items>
